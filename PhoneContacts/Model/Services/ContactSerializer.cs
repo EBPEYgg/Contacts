@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace PhoneContacts.Model.Services
@@ -19,7 +20,7 @@ namespace PhoneContacts.Model.Services
         /// Метод для сохранения объекта контакта в файл.
         /// </summary>
         /// <param name="contact">Экземпляр класса <see cref="Contact"/>.</param>
-        public static void SaveContact(Contact contact)
+        public static void SaveContact(ObservableCollection<Contact> contact)
         {
             if (!Directory.Exists(_filePath))
             {
@@ -34,15 +35,15 @@ namespace PhoneContacts.Model.Services
         /// Метод для загрузки объекта контакта из файла.
         /// </summary>
         /// <returns>Экземпляр класса <see cref="Contact"/>.</returns>
-        public static Contact LoadContact()
+        public static ObservableCollection<Contact> LoadContact()
         {
             if (!File.Exists(_filePath))
             {
-                return new Contact();
+                return new ObservableCollection<Contact>();
             }
 
             var json = File.ReadAllText(_filePath);
-            return JsonConvert.DeserializeObject<Contact>(json);
+            return JsonConvert.DeserializeObject<ObservableCollection<Contact>>(json);
         }
     }
 }
