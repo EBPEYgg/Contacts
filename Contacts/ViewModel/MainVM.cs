@@ -1,6 +1,7 @@
 ﻿using Contacts.Model;
 using Contacts.Model.Services;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace Contacts.ViewModel
 {
@@ -22,12 +23,12 @@ namespace Contacts.ViewModel
         /// <summary>
         /// Возвращает и задает команду для сохранения данных.
         /// </summary>
-        public MyCommand SaveCommand { get; set; }
+        public ICommand SaveCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для загрузки данных.
         /// </summary>
-        public MyCommand LoadCommand { get; set; }
+        public ICommand LoadCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает имя контакта.
