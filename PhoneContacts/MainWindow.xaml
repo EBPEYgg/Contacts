@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhoneContacts"
+        xmlns:local1="clr-namespace:PhoneContacts.Model.Services"
         xmlns:vm="clr-namespaces:PhoneContacts.ViewModel"
         xmlns:vm1="clr-namespace:PhoneContacts.ViewModel"
         mc:Ignorable="d"
@@ -11,30 +12,42 @@
     <Window.DataContext>
         <vm1:MainVM/>
     </Window.DataContext>
+    <Window.Resources>
+        <local1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <local1:BoolToEnabledConverter x:Key="BoolToEnabledConverter"/>
+    </Window.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="223*" MinWidth="150"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="374*" MinWidth="250"/>
+            <ColumnDefinition x:Name="ContactsColumn" Width="0.35*"/>
+            <ColumnDefinition x:Name="GridSplitterColumn" Width="3"/>
+            <ColumnDefinition x:Name="ReadContactColumn" Width="0.60*"/>
         </Grid.ColumnDefinitions>
+
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Left" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Width="3"/>
+
         <Grid Grid.Column="0" Background="#f0f0f0">
-            <Button x:Name="RemoveButton" Content="Remove" HorizontalAlignment="Left" Margin="136,0,0,10" VerticalAlignment="Bottom" Height="25" Width="60"/>
-            <Button x:Name="EditButton" Content="Edit" HorizontalAlignment="Left" Margin="73,0,0,10" VerticalAlignment="Bottom" Height="25" Width="60"/>
-            <Button x:Name="AddButton" Content="Add" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Height="25" Width="60"/>
-            <ListBox x:Name="ContactsListBox" d:ItemsSource="{d:SampleData ItemCount=5}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,40" Width="186" Height="361"/>
-            <TextBox x:Name="FindTextBox" HorizontalAlignment="Left" Margin="45,9,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="151" Height="18"/>
-            <TextBlock x:Name="FindTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Find:" VerticalAlignment="Top" Height="16" Width="30"/>
+            <Grid x:Name="LeftGrid" Width="186" Margin="11,10,12,10" Grid.RowSpan="2">
+
+                <ListBox x:Name="ContactsListBox" Grid.Row="0" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedItem}" Margin="0,0,0,30" Width="186"/>
+
+                <Grid x:Name="ButtonGrid" Background="#FFF0F0F0" Height="25" Width="186" VerticalAlignment="Bottom">
+                    <Button x:Name="AddButton" Content="Add" Command="{Binding AddCommand}" IsEnabled="{Binding IsButtonsEnabled, Converter={StaticResource BoolToEnabledConverter}}" HorizontalAlignment="Left" Width="60"/>
+                    <Button x:Name="RemoveButton" Content="Remove" IsEnabled="{Binding IsButtonsEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="126,0,0,0" HorizontalAlignment="Right" Width="60"/>
+                    <Button x:Name="EditButton" Content="Edit" VerticalAlignment="Center" Height="25" IsEnabled="{Binding IsButtonsEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="63,0,63,0" HorizontalAlignment="Center" Width="60"/>
+                </Grid>
+            </Grid>
         </Grid>
 
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Center" Width="3"/>
-        <Image x:Name="ContactImage" Grid.Column="2" HorizontalAlignment="Right" Height="100" Margin="0,33,250,0" VerticalAlignment="Top" Width="100" Source="/Resources/photo_placeholder_100x100.png"/>
-        <TextBlock x:Name="NameTextBlock" Grid.Column="2" HorizontalAlignment="Right" Margin="0,12,201,0" Text="Name:" VerticalAlignment="Top" Height="16" Width="34"/>
-        <TextBox x:Name="NameTextBox" Grid.Column="2" HorizontalAlignment="Right" Margin="0,33,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="226" Height="18"/>
-        <TextBlock x:Name="PhoneTextBlock" Grid.Column="2" HorizontalAlignment="Right" Margin="0,56,152,0" Text="Phone Number:" VerticalAlignment="Top" Height="16" Width="83"/>
-        <TextBox x:Name="PhoneTextBox" Grid.Column="2" HorizontalAlignment="Right" Margin="0,77,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="226" Height="18"/>
-        <TextBlock x:Name="EmailTextBlock" Grid.Column="2" HorizontalAlignment="Right" Margin="0,100,204,0" Text="Email:" VerticalAlignment="Top" Height="16" Width="31"/>
-        <TextBox x:Name="EmailTextBox" Grid.Column="2" HorizontalAlignment="Right" Margin="0,121,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" Height="18"/>
-        <Button x:Name="ApplyButton" Grid.Column="2" Content="Apply" HorizontalAlignment="Right" Margin="0,144,81,0" VerticalAlignment="Top" Width="84" Height="20" Command="{Binding SaveCommand}"/>
+        <Grid x:Name="InfoGrid" Grid.Column="2" Margin="0,10,9,10">
+            <Image x:Name="ContactImage" HorizontalAlignment="Right" Height="100" Margin="0,24,230,0" VerticalAlignment="Top" Width="100" Source="/Resources/photo_placeholder_100x100.png"/>
+            <TextBlock x:Name="NameTextBlock" HorizontalAlignment="Right" Margin="0,0,180,0" Text="Name:" VerticalAlignment="Top" Height="16" Width="34"/>
+            <TextBox x:Name="NameTextBox" HorizontalAlignment="Right" Margin="0,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="214" Height="18" Text="{Binding Name, Mode=TwoWay}"/>
+            <TextBlock x:Name="PhoneTextBlock" HorizontalAlignment="Right" Margin="0,44,131,0" Text="Phone Number:" VerticalAlignment="Top" Height="16"/>
+            <TextBox x:Name="PhoneTextBox" HorizontalAlignment="Right" Margin="0,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="214" Height="18" Text="{Binding Phone, Mode=TwoWay}"/>
+            <TextBlock x:Name="EmailTextBlock" HorizontalAlignment="Right" Margin="0,87,183,0" Text="Email:" VerticalAlignment="Top" Height="16" Width="31"/>
+            <TextBox x:Name="EmailTextBox" HorizontalAlignment="Right" Margin="0,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="214" Height="18" Text="{Binding Email, Mode=TwoWay}"/>
+            <Button x:Name="ApplyButton" Content="Apply" HorizontalAlignment="Right" Margin="0,131,65,0" VerticalAlignment="Top" Width="84" Height="20" Command="{Binding ApplyCommand}" Visibility="{Binding IsApplyButtonVisibility, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        </Grid>
 
     </Grid>
 </Window>
