@@ -320,6 +320,7 @@ namespace PhoneContacts.ViewModel
 
         private void Add()
         {
+            IsReadOnly = false;
             ClearContactInfo();
             IsApplyButtonVisibility = true;
             ToggleEnableButtons(false);
@@ -365,6 +366,7 @@ namespace PhoneContacts.ViewModel
             {
                 _selectedIndex = Contacts.IndexOf(SelectedContact);
                 Contacts.Remove(SelectedContact);
+                SaveCommand.Execute(_contacts);
 
                 if (Contacts.Count > 0)
                 {
@@ -378,9 +380,8 @@ namespace PhoneContacts.ViewModel
                 }
                 else
                 {
-                    // Если удаленный контакт был единственным в списке,
-                    // убираем выделение и очищаем поля
                     SelectedContact = null;
+                    ClearContactInfo();
                 }
             }
         }
