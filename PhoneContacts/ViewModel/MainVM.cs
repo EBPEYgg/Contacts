@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
 
 namespace PhoneContacts.ViewModel
 {
@@ -13,19 +14,9 @@ namespace PhoneContacts.ViewModel
     public class MainVM : INotifyPropertyChanged
     {
         /// <summary>
-        /// Инициализация экземпляра класса <see cref="Contact"/>.
-        /// </summary>
-        private Contact contact;
-
-        /// <summary>
         /// Коллекция с данными о контактах.
         /// </summary>
         private ObservableCollection<Contact> _contacts = new ObservableCollection<Contact>();
-
-        /// <summary>
-        /// Копия текущего выбранного контакта.
-        /// </summary>
-        private Contact _cloneCurrentContact = new Contact();
 
         /// <summary>
         /// Текущий выбранный контакт.
@@ -50,7 +41,7 @@ namespace PhoneContacts.ViewModel
         /// <summary>
         /// Индекс текущего выбранного элемента для добавления и редактирования элементов.
         /// </summary>
-        private int _selectedIndex;
+        private int _selectedIndex = -1;
 
         /// <summary>
         /// Свойство Visibility для кнопки ApplyButton
@@ -58,9 +49,29 @@ namespace PhoneContacts.ViewModel
         private bool _isApplyButtonVisibility = false;
 
         /// <summary>
-        /// Свойство IsEnabled для кнопок AddButton, EditButton, ApplyButton.
+        /// Свойство IsEnabled для кнопки AddButton.
         /// </summary>
-        private bool _isButtonsEnabled = true;
+        private bool _isAddButtonEnabled = true;
+
+        /// <summary>
+        /// Свойство IsEnabled для кнопки EditButton.
+        /// </summary>
+        private bool _isEditButtonEnabled = true;
+
+        /// <summary>
+        /// Свойство IsEnabled для кнопки RemoveButton.
+        /// </summary>
+        private bool _isRemoveButtonEnabled = true;
+
+        /// <summary>
+        /// Флаг, показывающий статус редактирования контакта.
+        /// </summary>
+        private bool _isEditing = false;
+
+        /// <summary>
+        /// Свойство IsReadOnly для NameTextBox, PhoneTextBox, EmailTextBox.
+        /// </summary>
+        private bool _isReadOnly = false;
 
         /// <summary>
         /// Событие, отслеживающее изменение значения свойства контакта.
@@ -119,17 +130,49 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
-        /// Возвращает и задает свойство IsEnabled у кнопок AddButton, EditButton, RemoveButton.
+        /// Возвращает и задает свойство IsEnabled у кнопки AddButton.
         /// </summary>
-        public bool IsButtonsEnabled
+        public bool IsAddButtonEnabled
         {
-            get => _isButtonsEnabled;
+            get => _isAddButtonEnabled;
             set
             {
-                if (_isButtonsEnabled != value)
+                if (_isAddButtonEnabled != value)
                 {
-                    _isButtonsEnabled = value;
-                    OnPropertyChanged(nameof(IsButtonsEnabled));
+                    _isAddButtonEnabled = value;
+                    OnPropertyChanged(nameof(IsAddButtonEnabled));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Возвращает и задает свойство IsEnabled у кнопки EditButton.
+        /// </summary>
+        public bool IsEditButtonEnabled
+        {
+            get => _isEditButtonEnabled;
+            set
+            {
+                if (_isEditButtonEnabled != value)
+                {
+                    _isEditButtonEnabled = value;
+                    OnPropertyChanged(nameof(IsEditButtonEnabled));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Возвращает и задает свойство IsEnabled у кнопки RemoveButton.
+        /// </summary>
+        public bool IsRemoveButtonEnabled
+        {
+            get => _isRemoveButtonEnabled;
+            set
+            {
+                if (_isRemoveButtonEnabled != value)
+                {
+                    _isRemoveButtonEnabled = value;
+                    OnPropertyChanged(nameof(IsRemoveButtonEnabled));
                 }
             }
         }
@@ -172,6 +215,38 @@ namespace PhoneContacts.ViewModel
                 OnPropertyChanged(nameof(Email));
             }
         }
+        
+        /// <summary>
+        /// Возвращает и задает свойство IsReadOnly для NameTextBox, PhoneTextBox, EmailTextBox.
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get => _isReadOnly;
+            set
+            {
+                if (_isReadOnly != value)
+                {
+                    _isReadOnly = value;
+                    OnPropertyChanged(nameof(IsReadOnly));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Возвращает и задает статус редактирования контакта.
+        /// </summary>
+        public bool IsEditing
+        {
+            get => _isEditing;
+            set
+            {
+                _isEditing = value;
+                IsReadOnly = !value;
+                OnPropertyChanged(nameof(IsEditing));
+                OnPropertyChanged(nameof(IsEditButtonEnabled));
+                OnPropertyChanged(nameof(IsApplyButtonVisibility));
+            }
+        }
 
         /// <summary>
         /// Возвращает и задает выбранный контакт.
@@ -185,6 +260,7 @@ namespace PhoneContacts.ViewModel
                 {
                     _selectedContact = value;
                     OnPropertyChanged(nameof(SelectedContact));
+                    SelectionChanged();
                 }
             }
         }
@@ -210,14 +286,15 @@ namespace PhoneContacts.ViewModel
         /// </summary>
         public MainVM()
         {
-            //contact = new Contact();
             Contacts = ContactSerializer.LoadContact();
             SaveCommand = new MyCommand((param) => ContactSerializer.SaveContact(_contacts));
             AddCommand = new MyCommand((param) => Add());
             ApplyCommand = new MyCommand((param) => Apply());
             EditCommand = new MyCommand((param) => Edit());
             RemoveCommand = new MyCommand((param) => Remove());
-            SelectedContactCommand = new MyCommand((param) => SelectedContact2());
+            SelectedContactCommand = new MyCommand((param) => SelectionChanged());
+            IsEditButtonEnabled = false;
+            IsRemoveButtonEnabled = false;
         }
 
         /// <summary>
@@ -227,45 +304,96 @@ namespace PhoneContacts.ViewModel
         private void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private void SelectedContact2()
+        private void SelectionChanged()
         {
-            ClearContactInfo();
-            IsButtonsEnabled = true;
-            //not 0
-            _selectedIndex = 0;
+            if (SelectedContact != null)
+            {
+                Name = SelectedContact.Name;
+                Phone = SelectedContact.Phone;
+                Email = SelectedContact.Email;
+                ToggleEnableButtons(true);
+                _selectedIndex = Contacts.IndexOf(SelectedContact);
+                IsEditing = false;
+                IsAddButtonEnabled = true;
+            }
         }
-        
+
         private void Add()
         {
             ClearContactInfo();
             IsApplyButtonVisibility = true;
-            IsButtonsEnabled = false;
-            //снятие выделение текущего контакта
+            ToggleEnableButtons(false);
+            SelectedContact = null;
         }
 
         private void Apply()
         {
-            Contact _currentContact = new Contact(Name, Phone, Email);
-            _contacts.Add(_currentContact);
+            if (!IsEditing)
+            {
+                Contact newContact = new Contact(Name, Phone, Email);
+                _contacts.Add(newContact);
+                SelectedContact = newContact;
+            }
+
+            else
+            {
+                SelectedContact.Name = Name;
+                SelectedContact.Phone = Phone;
+                SelectedContact.Email = Email;
+            }
+
             SaveCommand.Execute(_contacts);
-            ClearContactInfo();
-            IsButtonsEnabled = true;
+            ToggleEnableButtons(false);
+            IsAddButtonEnabled = true;
             IsApplyButtonVisibility = false;
+            IsEditing = false;
+            OnPropertyChanged(nameof(SelectedContact));
+            SelectedContact = null;
+            ClearContactInfo();
         }
 
         private void Edit()
         {
-
+            IsEditing = true;
+            IsApplyButtonVisibility = true;
+            ToggleEnableButtons(false);
         }
 
         private void Remove()
         {
-            _contacts.RemoveAt(_selectedIndex);
+            if (SelectedContact != null)
+            {
+                _selectedIndex = Contacts.IndexOf(SelectedContact);
+                Contacts.Remove(SelectedContact);
+
+                if (Contacts.Count > 0)
+                {
+                    // Если удаленный контакт был последним в списке,
+                    // устанавливаем выделение на последний контакт после удаления
+                    if (_selectedIndex >= Contacts.Count)
+                        _selectedIndex = Contacts.Count - 1;
+
+                    // Устанавливаем выбранный контакт на следующий после удаленного
+                    SelectedContact = Contacts[_selectedIndex];
+                }
+                else
+                {
+                    // Если удаленный контакт был единственным в списке,
+                    // убираем выделение и очищаем поля
+                    SelectedContact = null;
+                }
+            }
+        }
+
+        private void ToggleEnableButtons(bool value)
+        {
+            IsAddButtonEnabled = value;
+            IsEditButtonEnabled = value;
+            IsRemoveButtonEnabled = value;
         }
 
         private void ClearContactInfo()
         {
-            //снятие выделение текущего контакта
             Name = string.Empty;
             Phone = string.Empty;
             Email = string.Empty;
