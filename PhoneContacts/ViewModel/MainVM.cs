@@ -2,9 +2,7 @@
 using PhoneContacts.Model;
 using System.ComponentModel;
 using System.Windows.Input;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
 
 namespace PhoneContacts.ViewModel
 {
@@ -315,6 +313,7 @@ namespace PhoneContacts.ViewModel
                 _selectedIndex = Contacts.IndexOf(SelectedContact);
                 IsEditing = false;
                 IsAddButtonEnabled = true;
+                IsApplyButtonVisibility = false;
             }
         }
 
@@ -329,6 +328,8 @@ namespace PhoneContacts.ViewModel
 
         private void Apply()
         {
+            // BUG: при нажатии Apply после изменения данных
+            // имя контакта в ContactsListBox не обновляется
             if (!IsEditing)
             {
                 Contact newContact = new Contact(Name, Phone, Email);
