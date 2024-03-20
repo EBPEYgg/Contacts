@@ -24,38 +24,46 @@
             <ColumnDefinition x:Name="ReadContactColumn" Width="5*" MinWidth="250"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Background="#f0f0f0">
-            <Grid x:Name="LeftGrid" Width="186" Margin="11,10,12,10">
+        <Grid x:Name="LeftColumnGrid" Background="#f0f0f0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="46*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="55*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="95*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="104*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="395*"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="34*"/>
+            </Grid.RowDefinitions>
 
-                <ListBox x:Name="ContactsListBox" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}" Margin="0,0,0,30" Width="186">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
+            <ListBox x:Name="ContactsListBox" Grid.ColumnSpan="7" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}" Margin="8,10,8,4">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" />
                     </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </ListBox>
+                </i:Interaction.Triggers>
+            </ListBox>
 
-                <Grid x:Name="ButtonGrid" Background="#FFF0F0F0" Height="25" Width="186" VerticalAlignment="Bottom">
-                    <Button x:Name="AddButton" Content="Add" Command="{Binding AddCommand}" IsEnabled="{Binding IsAddButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="0,0,126,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="60"/>
-                    <Button x:Name="RemoveButton" Content="Remove" Command="{Binding RemoveCommand}" IsEnabled="{Binding IsRemoveButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="126,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="60"/>
-                    <Button x:Name="EditButton" Content="Edit" Height="25" Command="{Binding EditCommand}" IsEnabled="{Binding IsEditButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="63,0,63,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="60"/>
-                </Grid>
-            </Grid>
+            <Button x:Name="AddButton" Content="Add" Grid.Row="2" Grid.ColumnSpan="3" Command="{Binding AddCommand}" IsEnabled="{Binding IsAddButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Height="25" Margin="8,0,0,8" VerticalAlignment="Bottom"/>
+            <Button x:Name="RemoveButton" Content="Remove" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Command="{Binding RemoveCommand}" IsEnabled="{Binding IsRemoveButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="3,0,8,8" Height="25" VerticalAlignment="Bottom"/>
+            <Button x:Name="EditButton" Content="Edit" Grid.Row="2" Grid.Column="4" Command="{Binding EditCommand}" IsEnabled="{Binding IsEditButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="1,0,0,8" Height="25" VerticalAlignment="Bottom"/>
         </Grid>
 
         <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch"/>
-        <!--<GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Left" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"/>-->
 
         <Grid x:Name="InfoGrid" Grid.Column="2" Margin="0,10,9,10">
-            <Image x:Name="ContactImage" HorizontalAlignment="Right" Height="100" Margin="0,24,230,0" VerticalAlignment="Top" Width="100" Source="/Resources/photo_placeholder_100x100.png"/>
-            <TextBlock x:Name="NameTextBlock" HorizontalAlignment="Right" Margin="0,0,180,0" Text="Name:" VerticalAlignment="Top" Height="16" Width="34"/>
-            <TextBox x:Name="NameTextBox" HorizontalAlignment="Right" Margin="0,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="214" Height="18" Text="{Binding Name, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"/>
-            <TextBlock x:Name="PhoneTextBlock" HorizontalAlignment="Right" Margin="0,44,131,0" Text="Phone Number:" VerticalAlignment="Top" Height="16"/>
-            <TextBox x:Name="PhoneTextBox" HorizontalAlignment="Right" Margin="0,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="214" Height="18" Text="{Binding Phone, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"/>
-            <TextBlock x:Name="EmailTextBlock" HorizontalAlignment="Right" Margin="0,87,183,0" Text="Email:" VerticalAlignment="Top" Height="16" Width="31"/>
-            <TextBox x:Name="EmailTextBox" HorizontalAlignment="Right" Margin="0,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="214" Height="18" Text="{Binding Email, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"/>
+            <Image x:Name="ContactImage" Height="100" Margin="34,24,0,0" VerticalAlignment="Top" Source="/Resources/photo_placeholder_100x100.png" HorizontalAlignment="Left" Width="100"/>
+            <TextBlock x:Name="NameTextBlock" Margin="150,0,0,0" Text="Name:" VerticalAlignment="Top" Height="16" HorizontalAlignment="Left" Width="34"/>
+            <TextBox x:Name="NameTextBox" Margin="150,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Name, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"/>
+            <TextBlock x:Name="PhoneTextBlock" Margin="150,44,0,0" Text="Phone Number:" VerticalAlignment="Top" Height="16" HorizontalAlignment="Left" Width="83"/>
+            <TextBox x:Name="PhoneTextBox" Margin="150,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Phone, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"/>
+            <TextBlock x:Name="EmailTextBlock" Margin="150,87,0,0" Text="Email:" VerticalAlignment="Top" Height="16" HorizontalAlignment="Left" Width="31"/>
+            <TextBox x:Name="EmailTextBox" Margin="150,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Email, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"/>
             <Button x:Name="ApplyButton" Content="Apply" HorizontalAlignment="Right" Margin="0,131,65,0" VerticalAlignment="Top" Width="84" Height="20" Command="{Binding ApplyCommand}" Visibility="{Binding IsApplyButtonVisibility, Converter={StaticResource BoolToVisibilityConverter}}"/>
         </Grid>
-
     </Grid>
 </Window>
