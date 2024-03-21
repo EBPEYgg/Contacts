@@ -5,9 +5,13 @@ using System.Windows.Data;
 
 namespace PhoneContacts.Model.Services
 {
+    /// <summary>
+    /// Класс, описывающий конвертер значения для свойства Visibility.
+    /// </summary>
     public class BoolToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, 
+            object parameter, CultureInfo culture)
         {
             if (value is bool boolValue && boolValue)
             {
@@ -19,7 +23,8 @@ namespace PhoneContacts.Model.Services
             }
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, 
+            object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }
