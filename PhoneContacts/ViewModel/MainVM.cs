@@ -3,13 +3,14 @@ using PhoneContacts.Model;
 using System.ComponentModel;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
+using System;
 
 namespace PhoneContacts.ViewModel
 {
     /// <summary>
     /// Класс, описывающий ViewModel для главного окна.
     /// </summary>
-    public class MainVM : INotifyPropertyChanged
+    public class MainVM : INotifyPropertyChanged, IDataErrorInfo
     {
         /// <summary>
         /// Коллекция с данными о контактах.
@@ -247,6 +248,49 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
+        /// Возвращает проверку на ошибку.
+        /// </summary>
+        /// <param name="columnName"></param>
+        /// <returns>Текст ошибки.</returns>
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = String.Empty;
+                switch (columnName)
+                {
+                    case "Name":
+                        if (!ValueValidator.ValidateName(Name))
+                        {
+                            error = "Email can contains only russian, english letters and one space. Example: FirstName LastName";
+                        }
+                        break;
+                    case "PhoneNumber":
+                        if (!ValueValidator.ValidateNumber(Phone))
+                        {
+                            error = "Phone Number can contains only digits and symbols '+()-'. Example: 7 (999) 111-22-33";
+                        }
+                        break;
+                    case "Email":
+                        if (!ValueValidator.ValidateEmail(Email))
+                        {
+                            error = "Email can contains only digits, english letters and symbol '@'. Example: test@gmail.com";
+                        }
+                        break;
+                }
+                return error;
+            }
+        }
+
+        /// <summary>
+        /// Возвращает текст ошибки.
+        /// </summary>
+        public string Error
+        {
+            get => null;
+        }
+
+        /// <summary>
         /// Возвращает и задает выбранный контакт.
         /// </summary>
         public Contact SelectedContact
@@ -302,6 +346,9 @@ namespace PhoneContacts.ViewModel
         private void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+        /// <summary>
+        /// Метод для обработки выбранного контакта в ContactsListBox.
+        /// </summary>
         private void SelectionChanged()
         {
             if (SelectedContact != null)
@@ -317,6 +364,9 @@ namespace PhoneContacts.ViewModel
             }
         }
 
+        /// <summary>
+        /// Метод, который разрешает возможность добавить новый контакт.
+        /// </summary>
         private void Add()
         {
             IsReadOnly = false;
@@ -326,10 +376,12 @@ namespace PhoneContacts.ViewModel
             SelectedContact = null;
         }
 
+        /// <summary>
+        /// Метод для добавления нового контакта или 
+        /// принятия измененных данных существующего контакта.
+        /// </summary>
         private void Apply()
         {
-            // BUG: при нажатии Apply после изменения данных
-            // имя контакта в ContactsListBox не обновляется
             if (!IsEditing)
             {
                 Contact newContact = new Contact(Name, Phone, Email);
@@ -350,10 +402,12 @@ namespace PhoneContacts.ViewModel
             IsApplyButtonVisibility = false;
             IsEditing = false;
             OnPropertyChanged(nameof(SelectedContact));
-            SelectedContact = null;
-            ClearContactInfo();
+            SelectionChanged();
         }
 
+        /// <summary>
+        /// Метод, который позволяет редактировать выбранный контакт в ContactsListBox.
+        /// </summary>
         private void Edit()
         {
             IsEditing = true;
@@ -361,6 +415,9 @@ namespace PhoneContacts.ViewModel
             ToggleEnableButtons(false);
         }
 
+        /// <summary>
+        /// Метод, который позволяет удалить выбранный контакт в ContactsListBox.
+        /// </summary>
         private void Remove()
         {
             if (SelectedContact != null)
@@ -387,6 +444,10 @@ namespace PhoneContacts.ViewModel
             }
         }
 
+        /// <summary>
+        /// Метод, который переключает свойство IsEnabled у кнопок Add, Edit, Remove.
+        /// </summary>
+        /// <param name="value"></param>
         private void ToggleEnableButtons(bool value)
         {
             IsAddButtonEnabled = value;
@@ -394,6 +455,9 @@ namespace PhoneContacts.ViewModel
             IsRemoveButtonEnabled = value;
         }
 
+        /// <summary>
+        /// Метод, который очищает текстовые поля на форме.
+        /// </summary>
         private void ClearContactInfo()
         {
             Name = string.Empty;

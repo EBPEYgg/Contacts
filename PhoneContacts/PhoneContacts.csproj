@@ -62,8 +62,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Services\BoolToEnabledConverter.cs" />
     <Compile Include="Model\Services\BoolToVisibilityConverter.cs" />
+    <Compile Include="Model\Services\ValueValidator.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="ViewModel\MyCommand.cs" />
     <Page Include="MainWindow.xaml">
