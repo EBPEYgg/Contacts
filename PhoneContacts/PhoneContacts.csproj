@@ -63,6 +63,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Services\BoolToVisibilityConverter.cs" />
+    <Compile Include="Model\Services\PhoneFormatConverter.cs" />
     <Compile Include="Model\Services\ValueValidator.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="ViewModel\MyCommand.cs" />

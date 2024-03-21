@@ -40,5 +40,10 @@ namespace PhoneContacts
                 e.CancelCommand();
             }
         }
+
+        private void PhoneTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            PhoneTextBox.CaretIndex = PhoneTextBox.Text.Length;
+        }
     }
 }
