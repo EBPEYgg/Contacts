@@ -15,7 +15,20 @@
     </Window.DataContext>
     <Window.Resources>
         <local1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <local1:BoolToEnabledConverter x:Key="BoolToEnabledConverter"/>
+        <DataTemplate x:Key="contactTemplate">
+            <StackPanel Margin="3">
+                <TextBlock Text="{Binding Name}"/>
+                <TextBlock Text="{Binding Phone}"/>
+            </StackPanel>
+        </DataTemplate>
+        <ControlTemplate x:Key="validationFailed">
+            <StackPanel Orientation="Horizontal">
+                <Border BorderBrush="Violet" BorderThickness="2">
+                    <AdornedElementPlaceholder />
+                </Border>
+                <TextBlock Foreground="Red" FontSize="26" FontWeight="Bold">!</TextBlock>
+            </StackPanel>
+        </ControlTemplate>
     </Window.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
@@ -40,7 +53,7 @@
                 <RowDefinition Height="34*"/>
             </Grid.RowDefinitions>
 
-            <ListBox x:Name="ContactsListBox" Grid.ColumnSpan="7" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}" Margin="8,10,8,4">
+            <ListBox x:Name="ContactsListBox" Grid.ColumnSpan="7" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}" Margin="8,10,8,4" ItemTemplate="{StaticResource contactTemplate}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" />
@@ -48,9 +61,9 @@
                 </i:Interaction.Triggers>
             </ListBox>
 
-            <Button x:Name="AddButton" Content="Add" Grid.Row="2" Grid.ColumnSpan="3" Command="{Binding AddCommand}" IsEnabled="{Binding IsAddButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Height="25" Margin="8,0,0,8" VerticalAlignment="Bottom"/>
-            <Button x:Name="RemoveButton" Content="Remove" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Command="{Binding RemoveCommand}" IsEnabled="{Binding IsRemoveButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="3,0,8,8" Height="25" VerticalAlignment="Bottom"/>
-            <Button x:Name="EditButton" Content="Edit" Grid.Row="2" Grid.Column="4" Command="{Binding EditCommand}" IsEnabled="{Binding IsEditButtonEnabled, Converter={StaticResource BoolToEnabledConverter}}" Margin="1,0,0,8" Height="25" VerticalAlignment="Bottom"/>
+            <Button x:Name="AddButton" Content="Add" Grid.Row="2" Grid.ColumnSpan="3" Command="{Binding AddCommand}" IsEnabled="{Binding IsAddButtonEnabled}" Height="25" Margin="8,0,0,8" VerticalAlignment="Bottom"/>
+            <Button x:Name="RemoveButton" Content="Remove" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Command="{Binding RemoveCommand}" IsEnabled="{Binding IsRemoveButtonEnabled}" Margin="3,0,8,8" Height="25" VerticalAlignment="Bottom"/>
+            <Button x:Name="EditButton" Content="Edit" Grid.Row="2" Grid.Column="4" Command="{Binding EditCommand}" IsEnabled="{Binding IsEditButtonEnabled}" Margin="1,0,0,8" Height="25" VerticalAlignment="Bottom"/>
         </Grid>
 
         <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch"/>
