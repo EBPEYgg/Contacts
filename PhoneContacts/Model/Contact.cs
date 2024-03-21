@@ -9,16 +9,6 @@ namespace PhoneContacts.Model
     public class Contact : INotifyPropertyChanged
     {
         /// <summary>
-        /// Уникальный идентификатор контакта.
-        /// </summary>
-        private int _id;
-
-        /// <summary>
-        /// Счетчик контаков.
-        /// </summary>
-        private static int _allContactsCount;
-
-        /// <summary>
         /// Имя контакта.
         /// </summary>
         private string _name;
@@ -78,26 +68,6 @@ namespace PhoneContacts.Model
         }
 
         /// <summary>
-        /// Возвращает счетчик контактов.
-        /// </summary>
-        [JsonProperty]
-        public int AllContactsCount
-        {
-            get => _allContactsCount;
-            private set => _allContactsCount = value;
-        }
-
-        /// <summary>
-        /// Возвращает уникальный идентификатор товара.
-        /// </summary>
-        [JsonProperty]
-        public int Id
-        {
-            get => _id;
-            private set => _id = value;
-        }
-
-        /// <summary>
         /// Создает пустой экземпляр класса <see cref="Contact"/>.
         /// </summary>
         public Contact()
@@ -116,8 +86,6 @@ namespace PhoneContacts.Model
             Name = name;
             Phone = phone;
             Email = email;
-            AllContactsCount++;
-            Id = _allContactsCount;
         }
     }
 }
