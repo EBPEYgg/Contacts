@@ -16,9 +16,12 @@
     <Window.Resources>
         <local1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <DataTemplate x:Key="contactTemplate">
-            <StackPanel Margin="3">
-                <TextBlock Text="{Binding Name}"/>
-                <TextBlock Text="{Binding Phone}"/>
+            <StackPanel Margin="3" Orientation="Horizontal">
+                <Image Source="/Resources/photo_placeholder_listbox_100x100.png" MaxWidth="35" MaxHeight="35" Margin="0,0,5,0"/>
+                <StackPanel>
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Phone}"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
         <ControlTemplate x:Key="validationFailed">
@@ -36,7 +39,7 @@
     </Window.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="ContactsColumn" Width="3*" MinWidth="150"/>
+            <ColumnDefinition x:Name="ContactsColumn" Width="3*" MinWidth="180"/>
             <ColumnDefinition x:Name="GridSplitterColumn" Width="Auto"/>
             <ColumnDefinition x:Name="ReadContactColumn" Width="5*" MinWidth="250"/>
         </Grid.ColumnDefinitions>
