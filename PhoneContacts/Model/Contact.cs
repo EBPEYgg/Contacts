@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace PhoneContacts.Model
 {
     /// <summary>
     /// Класс, описывающий контакт в телефоне.
     /// </summary>
-    public class Contact
+    public class Contact : INotifyPropertyChanged
     {
         /// <summary>
         /// Уникальный идентификатор контакта.
@@ -33,12 +34,21 @@ namespace PhoneContacts.Model
         private string _email;
 
         /// <summary>
+        /// Событие, отслеживающее изменение значения свойства контакта.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
         /// Возвращает и задает имя контакта.
         /// </summary>
         public string Name
         {
             get => _name;
-            set => _name = value;
+            set
+            {
+                _name = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
+            }
         }
 
         /// <summary>
@@ -47,7 +57,11 @@ namespace PhoneContacts.Model
         public string Phone
         {
             get => _phone;
-            set => _phone = value;
+            set
+            {
+                _phone = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Phone"));
+            }
         }
 
         /// <summary>
@@ -56,7 +70,11 @@ namespace PhoneContacts.Model
         public string Email
         {
             get => _email;
-            set => _email = value;
+            set
+            {
+                _email = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Email"));
+            }
         }
 
         /// <summary>
@@ -100,15 +118,6 @@ namespace PhoneContacts.Model
             Email = email;
             AllContactsCount++;
             Id = _allContactsCount;
-        }
-
-        /// <summary>
-        /// Переопределение метода ToString() для класса <see cref="Contact"/>.
-        /// </summary>
-        /// <returns>Строка вида: "Имя".</returns>
-        public override string ToString()
-        {
-            return $"{Name}";
         }
     }
 }
