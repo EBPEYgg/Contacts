@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System;
+using System.Windows;
 
 namespace PhoneContacts.ViewModel
 {
@@ -248,33 +249,39 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
-        /// Возвращает проверку на ошибку.
+        /// Возвращает сообщение об ошибке.
         /// </summary>
-        /// <param name="columnName"></param>
+        /// <param name="columnName">Название свойства.</param>
         /// <returns>Текст ошибки.</returns>
         public string this[string columnName]
         {
             get
             {
-                string error = String.Empty;
+                string error = null;
                 switch (columnName)
                 {
                     case "Name":
-                        if (!ValueValidator.ValidateName(Name))
+                        if (!ValueValidator.ValidateName(Name) && 
+                            Name != null && Name != String.Empty)
                         {
-                            error = "Email can contains only russian, english letters and one space. Example: FirstName LastName";
+                            error = "Name can contains only russian, " +
+                                "english letters and one space. Example: FirstName LastName";
                         }
                         break;
-                    case "PhoneNumber":
-                        if (!ValueValidator.ValidateNumber(Phone))
+                    case "Phone":
+                        if (!ValueValidator.ValidateNumber(Phone) && 
+                            Phone != null && Phone != String.Empty)
                         {
-                            error = "Phone Number can contains only digits and symbols '+()-'. Example: 7 (999) 111-22-33";
+                            error = "Phone Number can contains only digits, " +
+                                "spaces and symbols '+()-'. Example: 7 (999) 111-22-33";
                         }
                         break;
                     case "Email":
-                        if (!ValueValidator.ValidateEmail(Email))
+                        if (!ValueValidator.ValidateEmail(Email) && 
+                            Email != null && Email != String.Empty)
                         {
-                            error = "Email can contains only digits, english letters and symbol '@'. Example: test@gmail.com";
+                            error = "Email can contains only digits, " +
+                                "english letters and symbol '@'. Example: test@gmail.com";
                         }
                         break;
                 }
@@ -285,10 +292,7 @@ namespace PhoneContacts.ViewModel
         /// <summary>
         /// Возвращает текст ошибки.
         /// </summary>
-        public string Error
-        {
-            get => null;
-        }
+        public string Error => null;
 
         /// <summary>
         /// Возвращает и задает выбранный контакт.
@@ -337,6 +341,7 @@ namespace PhoneContacts.ViewModel
             SelectedContactCommand = new MyCommand((param) => SelectionChanged());
             IsEditButtonEnabled = false;
             IsRemoveButtonEnabled = false;
+            IsReadOnly = true;
         }
 
         /// <summary>
