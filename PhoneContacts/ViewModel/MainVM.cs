@@ -39,7 +39,8 @@ namespace PhoneContacts.ViewModel
         private string _email;
 
         /// <summary>
-        /// Индекс текущего выбранного элемента для добавления и редактирования элементов.
+        /// Индекс текущего выбранного элемента для удаления 
+        /// и отображения содержимого элементов.
         /// </summary>
         private int _selectedIndex = -1;
 
@@ -342,6 +343,34 @@ namespace PhoneContacts.ViewModel
             IsEditButtonEnabled = false;
             IsRemoveButtonEnabled = false;
             IsReadOnly = true;
+
+            PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == nameof(Name) || 
+                e.PropertyName == nameof(Phone) || 
+                e.PropertyName == nameof(Email))
+                {
+                    IsApplyButtonVisibility = IsValidateDataInTextBoxes();
+                }
+            };
+        }
+
+        /// <summary>
+        /// Метод, который проверяет, правильно ли введены данные в текстовых полях.
+        /// </summary>
+        /// <returns>True, если данные в текстовых полях 
+        /// прошли валидацию, иначе false.</returns>
+        private bool IsValidateDataInTextBoxes()
+        {
+            if (Name != String.Empty && 
+                Phone != String.Empty && 
+                Email != String.Empty)
+            {
+                return string.IsNullOrEmpty(this["Name"]) &&
+                       string.IsNullOrEmpty(this["Phone"]) &&
+                       string.IsNullOrEmpty(this["Email"]);
+            }
+            return false;
         }
 
         /// <summary>
@@ -376,7 +405,6 @@ namespace PhoneContacts.ViewModel
         {
             IsReadOnly = false;
             ClearContactInfo();
-            IsApplyButtonVisibility = true;
             ToggleEnableButtons(false);
             SelectedContact = null;
         }
