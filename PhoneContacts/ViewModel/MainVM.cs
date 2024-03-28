@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System;
-using System.Windows;
 
 namespace PhoneContacts.ViewModel
 {
@@ -274,7 +273,7 @@ namespace PhoneContacts.ViewModel
                             Phone != null && Phone != String.Empty)
                         {
                             error = "Phone Number can contains only digits, " +
-                                "spaces and symbols '+()-'. Example: 7 (999) 111-22-33";
+                                "spaces and symbols '+()-'. Example: +7 (999) 111-22-33";
                         }
                         break;
                     case "Email":
@@ -340,10 +339,13 @@ namespace PhoneContacts.ViewModel
             EditCommand = new MyCommand((param) => Edit());
             RemoveCommand = new MyCommand((param) => Remove());
             SelectedContactCommand = new MyCommand((param) => SelectionChanged());
+
             IsEditButtonEnabled = false;
             IsRemoveButtonEnabled = false;
             IsReadOnly = true;
 
+            // Кнопка Apply видна, только если
+            // данные из текстовых полей прошли валидацию.
             PropertyChanged += (sender, e) =>
             {
                 if (e.PropertyName == nameof(Name) || 

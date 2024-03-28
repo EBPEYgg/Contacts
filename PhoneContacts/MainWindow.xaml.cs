@@ -1,6 +1,7 @@
 ﻿using PhoneContacts.Model.Services;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PhoneContacts
@@ -18,8 +19,7 @@ namespace PhoneContacts
         private void PhoneTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             int value;
-            string allowedChars = "+-() ";
-            if (!Int32.TryParse(e.Text, out value) && !allowedChars.Contains(e.Text))
+            if (!Int32.TryParse(e.Text, out value))
             {
                 e.Handled = true;
             }
@@ -41,7 +41,7 @@ namespace PhoneContacts
             }
         }
 
-        private void PhoneTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void PhoneTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             PhoneTextBox.CaretIndex = PhoneTextBox.Text.Length;
         }
