@@ -466,7 +466,9 @@ namespace PhoneContacts.ViewModel
                     // Если удаленный контакт был последним в списке,
                     // устанавливаем выделение на последний контакт после удаления
                     if (_selectedIndex >= Contacts.Count)
+                    {
                         _selectedIndex = Contacts.Count - 1;
+                    }
 
                     // Устанавливаем выбранный контакт на следующий после удаленного
                     SelectedContact = Contacts[_selectedIndex];
@@ -475,6 +477,8 @@ namespace PhoneContacts.ViewModel
                 {
                     SelectedContact = null;
                     ClearContactInfo();
+                    IsEditButtonEnabled = false;
+                    IsRemoveButtonEnabled = false;
                 }
             }
         }
