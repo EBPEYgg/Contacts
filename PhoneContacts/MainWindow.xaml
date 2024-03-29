@@ -8,7 +8,7 @@
         xmlns:local1="clr-namespace:PhoneContacts.Model.Services"
         xmlns:vm="clr-namespaces:PhoneContacts.ViewModel"
         xmlns:vm1="clr-namespace:PhoneContacts.ViewModel"
-        xmlns:Controls="clr-namespace:PhoneContacts.Controls" x:Class="PhoneContacts.MainWindow"
+        xmlns:userControls="clr-namespace:PhoneContacts.Controls" x:Class="PhoneContacts.MainWindow"
         mc:Ignorable="d"
         Title="Contacts" Height="450" Width="600" MinWidth="600" MinHeight="450" AllowDrop="True" WindowStartupLocation="CenterScreen" Icon="/Resources/ContactsApp_96x96.ico">
     <Window.Resources>
@@ -70,7 +70,7 @@
         <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch"/>
 
         <Grid x:Name="InfoGrid" Grid.Column="2" Margin="0,10,9,10">
-            <Controls:ContactCustomControl DataContext="{Binding SelectedContact}" VerticalAlignment="Top"/>
+            <userControls:ContactCustomControl DataContext="{Binding SelectedContact}" VerticalAlignment="Top"/>
             <Button x:Name="ApplyButton" Content="Apply" HorizontalAlignment="Right" Margin="0,131,65,0" VerticalAlignment="Top" Width="84" Height="20" Command="{Binding ApplyCommand}" Visibility="{Binding IsApplyButtonVisibility, Converter={StaticResource BoolToVisibilityConverter}}" Panel.ZIndex="1"/>
         </Grid>
     </Grid>
