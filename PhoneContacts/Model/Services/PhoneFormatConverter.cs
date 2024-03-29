@@ -9,6 +9,15 @@ namespace PhoneContacts.Model.Services
     /// </summary>
     public class PhoneFormatConverter : IValueConverter
     {
+        /// <summary>
+        /// Метод, представляющий собой конвертер, который преобразует строку, 
+        /// представляющую телефонный номер, в отформатированный телефонный номер.
+        /// </summary>
+        /// <param name="value">Строковое значение, представляющее телефонный номер.</param>
+        /// <param name="targetType">Тип, в который будет преобразовано значение.</param>
+        /// <param name="parameter">Необязательный параметр, используемый при преобразовании.</param>
+        /// <param name="culture">Язык, который будет использоваться в конвертере.</param>
+        /// <returns>Отформатированный телефонный номер.</returns>
         public object Convert(object value, Type targetType, 
             object parameter, CultureInfo culture)
         {
@@ -40,6 +49,14 @@ namespace PhoneContacts.Model.Services
             return value;
         }
 
+        /// <summary>
+        /// ConverterBack не поддерживается.
+        /// </summary>
+        /// <param name="value">Значение для обратного преобразования.</param>
+        /// <param name="targetType">Тип, к которому значение будет преобразовано обратно.</param>
+        /// <param name="parameter">Необязательный параметр, используемый при преобразовании.</param>
+        /// <param name="culture">Язык, который будет использоваться в конвертере.</param>
+        /// <returns>Возвращает value.</returns>
         public object ConvertBack(object value, Type targetType, 
             object parameter, CultureInfo culture)
         {
