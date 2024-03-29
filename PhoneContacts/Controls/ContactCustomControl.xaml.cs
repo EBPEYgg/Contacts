@@ -15,11 +15,21 @@ namespace PhoneContacts.Controls
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Метод, который перемещает указатель курсора в конец строки с номером.
+        /// </summary>
+        /// <param name="sender">Объект.</param>
+        /// <param name="e">Данные объекта.</param>
         private void PhoneTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             PhoneTextBox.CaretIndex = PhoneTextBox.Text.Length;
         }
 
+        /// <summary>
+        /// Метод, который запрещает ввод любых символов, кроме цифр.
+        /// </summary>
+        /// <param name="sender">Объект.</param>
+        /// <param name="e">Данные объекта.</param>
         private void PhoneTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             int value;
@@ -29,6 +39,12 @@ namespace PhoneContacts.Controls
             }
         }
 
+        /// <summary>
+        /// Метод, который запрещает вставку символов 
+        /// из буфера обмена, не прошедших валидацию.
+        /// </summary>
+        /// <param name="sender">Объект.</param>
+        /// <param name="e">Данные объекта.</param>
         private void PhoneTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(typeof(string)))

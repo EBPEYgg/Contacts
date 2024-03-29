@@ -10,6 +10,16 @@ namespace PhoneContacts.Model.Services
     /// </summary>
     public class BoolToVisibilityConverter : IValueConverter
     {
+        /// <summary>
+        /// Метод, представляющий собой конвертер, который преобразует 
+        /// логические значения в значения перечисления Visibility.
+        /// </summary>
+        /// <param name="value">Булевое значение, подлежащее преобразованию.</param>
+        /// <param name="targetType">Тип, в который будет преобразовано значение.</param>
+        /// <param name="parameter">Необязательный параметр, используемый при преобразовании.</param>
+        /// <param name="culture">Язык, который будет использоваться в конвертере.</param>
+        /// <returns>Visibility.Visible если булевое значение true, 
+        /// иначе Visibility.Collapsed.</returns>
         public object Convert(object value, Type targetType, 
             object parameter, CultureInfo culture)
         {
@@ -23,6 +33,14 @@ namespace PhoneContacts.Model.Services
             }
         }
 
+        /// <summary>
+        /// ConverterBack не поддерживается.
+        /// </summary>
+        /// <param name="value">Значение для обратного преобразования.</param>
+        /// <param name="targetType">Тип, к которому значение будет преобразовано обратно.</param>
+        /// <param name="parameter">Необязательный параметр, используемый при преобразовании.</param>
+        /// <param name="culture">Язык, который будет использоваться в конвертере.</param>
+        /// <returns>Вызывает исключение NotSupportedException.</returns>
         public object ConvertBack(object value, Type targetType, 
             object parameter, CultureInfo culture)
         {
