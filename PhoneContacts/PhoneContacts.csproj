@@ -62,11 +62,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ContactCustomControl.xaml.cs">
+      <DependentUpon>ContactCustomControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\Services\BoolToVisibilityConverter.cs" />
     <Compile Include="Model\Services\PhoneFormatConverter.cs" />
     <Compile Include="Model\Services\ValueValidator.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="ViewModel\MyCommand.cs" />
+    <Page Include="Controls\ContactCustomControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
