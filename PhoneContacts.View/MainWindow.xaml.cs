@@ -1,6 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
-namespace PhoneContacts
+namespace PhoneContacts.View
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml

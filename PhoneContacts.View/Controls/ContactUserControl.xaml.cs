@@ -2,15 +2,31 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
-namespace PhoneContacts.Controls
+namespace PhoneContacts.View.Controls
 {
     /// <summary>
-    /// Логика взаимодействия для ContactCustomControl.xaml
+    /// Логика взаимодействия для ContactUserControl.xaml
     /// </summary>
-    public partial class ContactCustomControl : UserControl
+    public partial class ContactUserControl : UserControl
     {
-        public ContactCustomControl()
+        public DependencyProperty MyPropertyProperty = DependencyProperty.Register(
+                "MyProperty", 
+                typeof(bool), 
+                typeof(ContactUserControl), 
+                new FrameworkPropertyMetadata(false));
+
+        public bool MyProperty
+        {
+            get { return (bool)GetValue(MyPropertyProperty); }
+            set { SetValue(MyPropertyProperty, value); }
+        }
+
+        /// <summary>
+        /// Конструктор класса <see cref="ContactUserControl"/>.
+        /// </summary>
+        public ContactUserControl()
         {
             InitializeComponent();
         }
@@ -30,7 +46,7 @@ namespace PhoneContacts.Controls
         /// </summary>
         /// <param name="sender">Объект.</param>
         /// <param name="e">Данные объекта.</param>
-        private void PhoneTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        private void PhoneTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             int value;
             if (!Int32.TryParse(e.Text, out value))

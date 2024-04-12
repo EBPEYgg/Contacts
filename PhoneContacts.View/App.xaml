@@ -1,7 +1,7 @@
-﻿<Application x:Class="PhoneContacts.App"
+﻿<Application x:Class="PhoneContacts.View.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:PhoneContacts"
+             xmlns:local="clr-namespace:PhoneContacts.View"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
