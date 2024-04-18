@@ -1,10 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using PhoneContacts.Model.Services;
-using PhoneContacts.ViewModel;
 using PhoneContacts.Model;
-using System.Windows;
-using System.Windows.Input;
 using System.Runtime.CompilerServices;
 
 namespace PhoneContacts.ViewModel
@@ -107,6 +104,24 @@ namespace PhoneContacts.ViewModel
         public string Error => null;
 
         /// <summary>
+        /// Метод, который проверяет, правильно ли введены данные в текстовых полях.
+        /// </summary>
+        /// <returns>True, если данные в текстовых полях 
+        /// прошли валидацию, иначе false.</returns>
+        public bool IsValidateData()
+        {
+            if (Name != string.Empty &&
+                Phone != string.Empty &&
+                Email != string.Empty)
+            {
+                return string.IsNullOrEmpty(this[nameof(Name)]) &&
+                       string.IsNullOrEmpty(this[nameof(Phone)]) &&
+                       string.IsNullOrEmpty(this[nameof(Email)]);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Создаёт глубокую копию представления контакта.
         /// </summary>
         /// <returns>Глубокая копия <see cref="ContactVM"/>.</returns>
@@ -117,21 +132,13 @@ namespace PhoneContacts.ViewModel
             return returnContact;
         }
 
+        /// <summary>
+        /// Создаёт экземпляр класса <see cref="ContactVM"/>.
+        /// </summary>
         public ContactVM()
         {
             _contact = new Contact();
-
-            // Кнопка Apply видна, только если
-            // данные из текстовых полей прошли валидацию.
-            //PropertyChanged += (sender, e) =>
-            //{
-            //    if (e.PropertyName == nameof(Name) ||
-            //    e.PropertyName == nameof(Phone) ||
-            //    e.PropertyName == nameof(Email))
-            //    {
-            //        IsApplyButtonVisibility = IsValidateDataInTextBoxes();
-            //    }
-            //};
+            OnPropertyChanged();
         }
 
         /// <summary>
@@ -156,24 +163,6 @@ namespace PhoneContacts.ViewModel
         private void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
-        /// <summary>
-        /// Метод, который проверяет, правильно ли введены данные в текстовых полях.
-        /// </summary>
-        /// <returns>True, если данные в текстовых полях 
-        /// прошли валидацию, иначе false.</returns>
-        private bool IsValidateDataInTextBoxes()
-        {
-            if (Name != string.Empty &&
-                Phone != string.Empty &&
-                Email != string.Empty)
-            {
-                return string.IsNullOrEmpty(this["Name"]) &&
-                       string.IsNullOrEmpty(this["Phone"]) &&
-                       string.IsNullOrEmpty(this["Email"]);
-            }
-            return false;
         }
     }
 }

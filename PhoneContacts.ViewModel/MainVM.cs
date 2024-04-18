@@ -1,5 +1,4 @@
 ﻿using PhoneContacts.Model;
-using System.Windows.Input;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -71,37 +70,37 @@ namespace PhoneContacts.ViewModel
         /// <summary>
         /// Возвращает и задает команду для сохранения данных.
         /// </summary>
-        public ICommand SaveCommand { get; set; }
+        public RelayCommand SaveCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для загрузки данных.
         /// </summary>
-        public ICommand LoadCommand { get; set; }
+        public RelayCommand LoadCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для работы с выбранным в листбоксе контактом.
         /// </summary>
-        public ICommand SelectedContactCommand { get; set; }
+        public RelayCommand SelectedContactCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для добавления контакта.
         /// </summary>
-        public ICommand AddCommand { get; set; }
+        public RelayCommand AddCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для редактирования контакта.
         /// </summary>
-        public ICommand EditCommand { get; set; }
+        public RelayCommand EditCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для удаления контакта.
         /// </summary>
-        public ICommand RemoveCommand { get; set; }
+        public RelayCommand RemoveCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для сохранения данных о контакте.
         /// </summary>
-        public ICommand ApplyCommand { get; set; }
+        public RelayCommand ApplyCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает свойство Visibility у кнопки ApplyButton.
@@ -177,15 +176,6 @@ namespace PhoneContacts.ViewModel
             {
                 if (_isReadOnly != value)
                 {
-                    if (value)
-                    {
-                        //SelectedContact.PropertyChanged -= SelectedContact_PropertyChanged;
-                    }
-                    else
-                    {
-                        //SelectedContact.PropertyChanged += SelectedContact_PropertyChanged;
-                    }
-                    IsApplyButtonVisibility = !value;
                     _isReadOnly = value;
                     OnPropertyChanged(nameof(IsReadOnly));
                 }
@@ -257,7 +247,6 @@ namespace PhoneContacts.ViewModel
                         }
                     }
                     OnPropertyChanged(nameof(SelectedContact));
-                    //SelectionChanged();
                 }
             }
         }
@@ -279,26 +268,10 @@ namespace PhoneContacts.ViewModel
             ApplyCommand = new RelayCommand(Apply);
             EditCommand = new RelayCommand(Edit);
             RemoveCommand = new RelayCommand(Remove);
-            SelectedContactCommand = new RelayCommand(SelectionChanged);
 
             IsEditButtonEnabled = false;
             IsRemoveButtonEnabled = false;
             IsReadOnly = true;
-        }
-
-        /// <summary>
-        /// Метод для обработки выбранного контакта в ContactsListBox.
-        /// </summary>
-        private void SelectionChanged()
-        {
-            if (SelectedContact != null)
-            {
-                ToggleEnableButtons(true);
-                _selectedIndex = Contacts.IndexOf(SelectedContact);
-                IsEditing = false;
-                IsAddButtonEnabled = true;
-                IsApplyButtonVisibility = false;
-            }
         }
 
         /// <summary>
@@ -307,7 +280,6 @@ namespace PhoneContacts.ViewModel
         private void Add()
         {
             IsReadOnly = false;
-            ClearContactInfo();
             ToggleEnableButtons(false);
             SelectedContact = null;
             SelectedContact = new ContactVM();
@@ -321,12 +293,11 @@ namespace PhoneContacts.ViewModel
         /// </summary>
         private void Apply()
         {
-            //SelectedContact.PropertyChanged -= SelectedContact_PropertyChanged;
-
             if (IsAdding)
             {
                 Contacts.Add(SelectedContact);
                 IsAdding = false;
+                SelectedContact = null;
             }
 
             else
@@ -344,7 +315,6 @@ namespace PhoneContacts.ViewModel
             IsApplyButtonVisibility = false;
             IsEditing = false;
             OnPropertyChanged(nameof(SelectedContact));
-            //SelectionChanged();
         }
 
         /// <summary>
@@ -386,7 +356,6 @@ namespace PhoneContacts.ViewModel
                 else
                 {
                     SelectedContact = null;
-                    ClearContactInfo();
                     IsEditButtonEnabled = false;
                     IsRemoveButtonEnabled = false;
                 }
@@ -405,15 +374,8 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
-        /// Метод, который очищает текстовые поля на форме.
+        /// <inheritdoc cref="ContactSerializer.SaveContact(ObservableCollection{ContactVM})"/>
         /// </summary>
-        private void ClearContactInfo()
-        {
-            //SelectedContact.Name = string.Empty;
-            //SelectedContact.Phone = string.Empty;
-            //SelectedContact.Email = string.Empty;
-        }
-
         private void SaveContacts()
         {
             ContactSerializer.SaveContact(Contacts);
