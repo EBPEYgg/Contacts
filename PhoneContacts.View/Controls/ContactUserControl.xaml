@@ -19,23 +19,19 @@
         </ControlTemplate>
         <Style TargetType="TextBox">
             <Style.Triggers>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Path=(Validation.HasError), RelativeSource={RelativeSource Self}}" Value="True" />
-                        <Condition Binding="{Binding Path=(Validation.Errors).Count, RelativeSource={RelativeSource Self}}" Value="0" />
-                    </MultiDataTrigger.Conditions>
+                <Trigger Property="Validation.HasError" Value="True">
                     <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}" />
-                </MultiDataTrigger>
+                </Trigger>
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
     <Grid x:Name="InfoGrid" Background="White">
         <Image x:Name="ContactImage" Height="100" Margin="25,24,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Source="/Resources/photo_placeholder_listbox_100x100.png"/>
         <TextBlock x:Name="NameTextBlock" Margin="150,0,0,0" Text="Name:" VerticalAlignment="Top" Height="16" HorizontalAlignment="Left" Width="34"/>
-        <TextBox x:Name="NameTextBox" Margin="150,21,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" IsReadOnly="{Binding MyProperty, RelativeSource={RelativeSource AncestorType=local2:ContactUserControl}}" Validation.ErrorTemplate="{StaticResource validationFailed}"/>
+        <TextBox x:Name="NameTextBox" Margin="150,21,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=local2:ContactUserControl}}" Validation.ErrorTemplate="{StaticResource validationFailed}"/>
         <TextBlock x:Name="PhoneTextBlock" Margin="150,44,0,0" Text="Phone Number:" VerticalAlignment="Top" Height="16" HorizontalAlignment="Left" Width="83"/>
-        <TextBox x:Name="PhoneTextBox" Margin="150,65,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PhoneFormatConverter}, ValidatesOnDataErrors=True}" IsReadOnly="{Binding MyProperty, RelativeSource={RelativeSource AncestorType=local2:ContactUserControl}}" Validation.ErrorTemplate="{StaticResource validationFailed}" DataObject.Pasting="PhoneTextBox_Pasting" TextChanged="PhoneTextBox_TextChanged" PreviewTextInput="PhoneTextBox_PreviewTextInput"/>
+        <TextBox x:Name="PhoneTextBox" Margin="150,65,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PhoneFormatConverter}, ValidatesOnDataErrors=True}" IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=local2:ContactUserControl}}" Validation.ErrorTemplate="{StaticResource validationFailed}" DataObject.Pasting="PhoneTextBox_Pasting" TextChanged="PhoneTextBox_TextChanged" PreviewTextInput="PhoneTextBox_PreviewTextInput"/>
         <TextBlock x:Name="EmailTextBlock" Margin="150,87,0,0" Text="Email:" VerticalAlignment="Top" Height="16" HorizontalAlignment="Left" Width="31"/>
-        <TextBox x:Name="EmailTextBox" Margin="150,108,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" IsReadOnly="{Binding MyProperty, RelativeSource={RelativeSource AncestorType=local2:ContactUserControl}}" Validation.ErrorTemplate="{StaticResource validationFailed}"/>
+        <TextBox x:Name="EmailTextBox" Margin="150,108,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=local2:ContactUserControl}}" Validation.ErrorTemplate="{StaticResource validationFailed}"/>
     </Grid>
 </UserControl>

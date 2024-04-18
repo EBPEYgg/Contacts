@@ -7,20 +7,27 @@ using System.Windows.Input;
 namespace PhoneContacts.View.Controls
 {
     /// <summary>
-    /// Логика взаимодействия для ContactUserControl.xaml
+    /// Логика взаимодействия для ContactUserControl.xaml.
     /// </summary>
     public partial class ContactUserControl : UserControl
     {
-        public DependencyProperty MyPropertyProperty = DependencyProperty.Register(
-                "MyProperty", 
+        /// <summary>
+        /// Свойство блокировки полей контакта. <see cref="DependencyProperty"/>.
+        /// </summary>
+        public static readonly DependencyProperty IsReadOnlyProperty = 
+            DependencyProperty.Register(
+                "IsReadOnly", 
                 typeof(bool), 
                 typeof(ContactUserControl), 
                 new FrameworkPropertyMetadata(false));
 
-        public bool MyProperty
+        /// <summary>
+        /// Возвращает и задаёт блокировку полей для ввода данных контакта.
+        /// </summary>
+        public bool IsReadOnly
         {
-            get { return (bool)GetValue(MyPropertyProperty); }
-            set { SetValue(MyPropertyProperty, value); }
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
         }
 
         /// <summary>
