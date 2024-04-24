@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PhoneContacts.ViewModel.Services;
+using System.Xml.Linq;
 
 namespace PhoneContacts.ViewModel
 {
@@ -247,6 +248,7 @@ namespace PhoneContacts.ViewModel
                         }
                     }
                     OnPropertyChanged(nameof(SelectedContact));
+                    SelectionChange();
                 }
             }
         }
@@ -262,16 +264,30 @@ namespace PhoneContacts.ViewModel
         public MainVM()
         {
             Contacts = ContactSerializer.LoadContact();
+            if (Contacts.Count > 0)
+            {
+                SelectedContact = Contacts[0];
+            }
 
             SaveCommand = new RelayCommand(SaveContacts);
             AddCommand = new RelayCommand(Add);
-            ApplyCommand = new RelayCommand(Apply);
+            ApplyCommand = new RelayCommand(Apply, SelectedContact.IsValidateData);
             EditCommand = new RelayCommand(Edit);
             RemoveCommand = new RelayCommand(Remove);
 
             IsEditButtonEnabled = false;
             IsRemoveButtonEnabled = false;
             IsReadOnly = true;
+        }
+
+        private void SelectionChange()
+        {
+            if (SelectedContact != null)
+            {
+                ToggleEnableButtons(true);
+                IsEditing = false;
+                IsApplyButtonVisibility = false;
+            }
         }
 
         /// <summary>
@@ -302,7 +318,7 @@ namespace PhoneContacts.ViewModel
 
             else
             {
-                _selectedIndex = Contacts.IndexOf(SelectedContact);
+                _selectedIndex = Contacts.IndexOf(BeforeEditingContact);
                 Contacts[_selectedIndex] = SelectedContact;
                 OnPropertyChanged(nameof(BeforeEditingContact));
                 SelectedContact = Contacts[_selectedIndex];
