@@ -1,22 +1,22 @@
-﻿using System;
-using System.ComponentModel;
-using PhoneContacts.Model.Services;
+﻿using PhoneContacts.Model.Services;
 using PhoneContacts.Model;
-using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.ComponentModel;
+using System;
 
 namespace PhoneContacts.ViewModel
 {
-    public class ContactVM : INotifyPropertyChanged, IDataErrorInfo, ICloneable
+    public class ContactVM : ObservableObject, IDataErrorInfo, ICloneable
     {
-        /// <summary>
-        /// Событие для отслеживания изменений в свойствах.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
         /// <summary>
         /// Экземпляр класса <see cref="Contact"/>.
         /// </summary>
         private Contact _contact;
+
+        /// <summary>
+        /// Наличие ошибок валидации.
+        /// </summary>
+        private bool _hasValidationErrors;
 
         /// <summary>
         /// Возвращает и задаёт имя контакта.
@@ -28,6 +28,7 @@ namespace PhoneContacts.ViewModel
             {
                 _contact.Name = value;
                 OnPropertyChanged(nameof(Name));
+                Validate();
             }
         }
 
@@ -41,6 +42,7 @@ namespace PhoneContacts.ViewModel
             {
                 _contact.Phone = value;
                 OnPropertyChanged(nameof(Phone));
+                Validate();
             }
         }
 
@@ -54,6 +56,23 @@ namespace PhoneContacts.ViewModel
             {
                 _contact.Email = value;
                 OnPropertyChanged(nameof(Email));
+                Validate();
+            }
+        }
+
+        /// <summary>
+        /// Возвращает и задает наличие ошибок валидации данных.
+        /// </summary>
+        public bool HasValidationErrors
+        {
+            get => _hasValidationErrors;
+            set
+            {
+                if (_hasValidationErrors != value)
+                {
+                    _hasValidationErrors = value;
+                    OnPropertyChanged(nameof(HasValidationErrors));
+                }
             }
         }
 
@@ -70,24 +89,21 @@ namespace PhoneContacts.ViewModel
                 switch (columnName)
                 {
                     case "Name":
-                        if (!ValueValidator.ValidateName(Name) &&
-                            Name != null && Name != String.Empty)
+                        if (!ValueValidator.ValidateName(Name) && Name != string.Empty)
                         {
                             error = "Name can contains only russian, " +
                                 "english letters and one space. Example: FirstName LastName";
                         }
                         break;
                     case "Phone":
-                        if (!ValueValidator.ValidateNumber(Phone) &&
-                            Phone != null && Phone != String.Empty)
+                        if (!ValueValidator.ValidateNumber(Phone) && Phone != string.Empty)
                         {
                             error = "Phone Number can contains only digits, " +
                                 "spaces and symbols '+()-'. Example: +7 (999) 111-22-33";
                         }
                         break;
                     case "Email":
-                        if (!ValueValidator.ValidateEmail(Email) &&
-                            Email != null && Email != String.Empty)
+                        if (!ValueValidator.ValidateEmail(Email) && Email != string.Empty)
                         {
                             error = "Email can contains only digits, " +
                                 "english letters and symbol '@'. Example: test@gmail.com";
@@ -102,24 +118,6 @@ namespace PhoneContacts.ViewModel
         /// Возвращает текст ошибки.
         /// </summary>
         public string Error => null;
-
-        /// <summary>
-        /// Метод, который проверяет, правильно ли введены данные в текстовых полях.
-        /// </summary>
-        /// <returns>True, если данные в текстовых полях 
-        /// прошли валидацию, иначе false.</returns>
-        public bool IsValidateData()
-        {
-            if (Name != string.Empty &&
-                Phone != string.Empty &&
-                Email != string.Empty)
-            {
-                return string.IsNullOrEmpty(this[nameof(Name)]) &&
-                       string.IsNullOrEmpty(this[nameof(Phone)]) &&
-                       string.IsNullOrEmpty(this[nameof(Email)]);
-            }
-            return false;
-        }
 
         /// <summary>
         /// Создаёт глубокую копию представления контакта.
@@ -142,27 +140,16 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
-        /// Создаёт экземпляр класса <see cref="ContactVM"/>.
+        /// Метод, который проверяет, правильно ли введены данные в текстовых полях.
         /// </summary>
-        /// <param name="name">Имя контакта.</param>
-        /// <param name="phone">Номер телефона контакта.</param>
-        /// <param name="email">Адрес электронной почты контакта.</param>
-        public ContactVM(string name, string phone, string email)
+        /// <returns>True, если данные в текстовых полях
+        /// прошли валидацию, иначе false.</returns>
+        private void Validate()
         {
-            _contact = new Contact();
-            Name = name;
-            Phone = phone;
-            Email = email;
-            OnPropertyChanged();
-        }
-
-        /// <summary>
-        /// Вызывает событие <see cref="PropertyChanged"/>
-        /// </summary>
-        /// <param name="property">Название изменённого свойства.</param>
-        private void OnPropertyChanged([CallerMemberName] string property = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            bool isValid = ValueValidator.ValidateName(Name) && Name != string.Empty
+                && ValueValidator.ValidateNumber(Phone) && Phone != string.Empty
+                && ValueValidator.ValidateEmail(Email) && Email != string.Empty;
+            HasValidationErrors = !isValid;
         }
     }
 }

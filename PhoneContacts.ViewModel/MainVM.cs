@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PhoneContacts.ViewModel.Services;
-using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace PhoneContacts.ViewModel
 {
@@ -72,16 +72,6 @@ namespace PhoneContacts.ViewModel
         /// Возвращает и задает команду для сохранения данных.
         /// </summary>
         public RelayCommand SaveCommand { get; set; }
-
-        /// <summary>
-        /// Возвращает и задает команду для загрузки данных.
-        /// </summary>
-        public RelayCommand LoadCommand { get; set; }
-
-        /// <summary>
-        /// Возвращает и задает команду для работы с выбранным в листбоксе контактом.
-        /// </summary>
-        public RelayCommand SelectedContactCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для добавления контакта.
@@ -193,9 +183,6 @@ namespace PhoneContacts.ViewModel
             {
                 _isEditing = value;
                 IsReadOnly = !value;
-                OnPropertyChanged(nameof(IsEditing));
-                OnPropertyChanged(nameof(IsEditButtonEnabled));
-                OnPropertyChanged(nameof(IsApplyButtonVisibility));
             }
         }
 
@@ -209,7 +196,6 @@ namespace PhoneContacts.ViewModel
             {
                 if (_isAdding != value)
                 {
-                    IsReadOnly = !value;
                     _isAdding = value;
                     OnPropertyChanged(nameof(IsAdding));
                 }
@@ -239,14 +225,6 @@ namespace PhoneContacts.ViewModel
                 if (_selectedContact != value)
                 {
                     _selectedContact = value;
-                    if (Contacts.Contains(value))
-                    {
-                        IsAdding = false;
-                        if (IsEditing)
-                        {
-                            IsEditing = false;
-                        }
-                    }
                     OnPropertyChanged(nameof(SelectedContact));
                     SelectionChange();
                 }
@@ -254,7 +232,7 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
-        /// Возвращает и задает список товаров.
+        /// Возвращает и задает список контактов.
         /// </summary>
         public ObservableCollection<ContactVM> Contacts { get; set; }
 
@@ -264,29 +242,32 @@ namespace PhoneContacts.ViewModel
         public MainVM()
         {
             Contacts = ContactSerializer.LoadContact();
-            if (Contacts.Count > 0)
-            {
-                SelectedContact = Contacts[0];
-            }
-
             SaveCommand = new RelayCommand(SaveContacts);
             AddCommand = new RelayCommand(Add);
-            ApplyCommand = new RelayCommand(Apply, SelectedContact.IsValidateData);
+            ApplyCommand = new RelayCommand(Apply);
             EditCommand = new RelayCommand(Edit);
             RemoveCommand = new RelayCommand(Remove);
 
             IsEditButtonEnabled = false;
             IsRemoveButtonEnabled = false;
             IsReadOnly = true;
+
+            if (Contacts.Count > 0)
+            {
+                SelectedContact = Contacts[0];
+            }
         }
 
+        /// <summary>
+        /// Метод, который обрабатывает смену выбранного контакта.
+        /// </summary>
         private void SelectionChange()
         {
             if (SelectedContact != null)
             {
                 ToggleEnableButtons(true);
                 IsEditing = false;
-                IsApplyButtonVisibility = false;
+                SelectedContact.PropertyChanged += OnContactPropertyChanged;
             }
         }
 
@@ -295,12 +276,15 @@ namespace PhoneContacts.ViewModel
         /// </summary>
         private void Add()
         {
-            IsReadOnly = false;
-            ToggleEnableButtons(false);
+            if (Contacts.Count > 0)
+            {
+                SelectedContact.PropertyChanged -= OnContactPropertyChanged;
+            }
+            IsAdding = true;
             SelectedContact = null;
             SelectedContact = new ContactVM();
-            IsAdding = true;
-            OnPropertyChanged(nameof(IsAdding));
+            ToggleEnableButtons(false);
+            IsReadOnly = false;
         }
 
         /// <summary>
@@ -313,23 +297,19 @@ namespace PhoneContacts.ViewModel
             {
                 Contacts.Add(SelectedContact);
                 IsAdding = false;
-                SelectedContact = null;
             }
 
             else
             {
                 _selectedIndex = Contacts.IndexOf(BeforeEditingContact);
                 Contacts[_selectedIndex] = SelectedContact;
-                OnPropertyChanged(nameof(BeforeEditingContact));
                 SelectedContact = Contacts[_selectedIndex];
-                IsEditing = false;
             }
 
             SaveCommand.Execute(_contacts);
-            ToggleEnableButtons(false);
-            IsAddButtonEnabled = true;
             IsApplyButtonVisibility = false;
             IsEditing = false;
+            ToggleEnableButtons(true);
             OnPropertyChanged(nameof(SelectedContact));
         }
 
@@ -341,9 +321,8 @@ namespace PhoneContacts.ViewModel
             BeforeEditingContact = SelectedContact;
             SelectedContact = (ContactVM)SelectedContact.Clone();
             IsEditing = true;
-            IsApplyButtonVisibility = true;
+            UpdateApplyButtonVisibility();
             ToggleEnableButtons(false);
-            OnPropertyChanged(nameof(Edit));
         }
 
         /// <summary>
@@ -395,6 +374,29 @@ namespace PhoneContacts.ViewModel
         private void SaveContacts()
         {
             ContactSerializer.SaveContact(Contacts);
+        }
+
+        /// <summary>
+        /// Метод, который отслеживает изменения свойства 
+        /// <see cref="ContactVM.HasValidationErrors"/> в <see cref="ContactVM"/>.
+        /// </summary>
+        /// <param name="sender">Ссылка на объект, который инициировал событие.</param>
+        /// <param name="e">Объект с информацией о событии измененнного свойства.</param>
+        private void OnContactPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ContactVM.HasValidationErrors))
+            {
+                UpdateApplyButtonVisibility();
+            }
+        }
+
+        /// <summary>
+        /// Метод, который меняет видимость кнопки Apply 
+        /// в зависимости от результата валидации данных.
+        /// </summary>
+        private void UpdateApplyButtonVisibility()
+        {
+            IsApplyButtonVisibility = !SelectedContact.HasValidationErrors;
         }
     }
 }
