@@ -50,13 +50,7 @@
                 <RowDefinition Height="34*"/>
             </Grid.RowDefinitions>
 
-            <ListBox x:Name="ContactsListBox" Grid.ColumnSpan="7" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}" Margin="8,10,8,4" ItemTemplate="{StaticResource contactTemplate}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="SelectionChanged">
-                        <i:InvokeCommandAction Command="{Binding SelectedContactCommand}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </ListBox>
+            <ListBox x:Name="ContactsListBox" Grid.ColumnSpan="7" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}" Margin="8,10,8,4" ItemTemplate="{StaticResource contactTemplate}"/>
 
             <Button x:Name="AddButton" Content="Add" Grid.Row="2" Grid.ColumnSpan="3" Command="{Binding AddCommand}" IsEnabled="{Binding IsAddButtonEnabled}" Height="25" Margin="8,0,0,8" VerticalAlignment="Bottom"/>
             <Button x:Name="RemoveButton" Content="Remove" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Command="{Binding RemoveCommand}" IsEnabled="{Binding IsRemoveButtonEnabled}" Margin="3,0,8,8" Height="25" VerticalAlignment="Bottom"/>
