@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System;
 using System.ComponentModel;
 
 namespace PhoneContacts.Model
@@ -6,7 +6,7 @@ namespace PhoneContacts.Model
     /// <summary>
     /// Класс, описывающий контакт в телефоне.
     /// </summary>
-    public class Contact : INotifyPropertyChanged
+    public class Contact : INotifyPropertyChanged, ICloneable
     {
         /// <summary>
         /// Имя контакта.
@@ -80,12 +80,21 @@ namespace PhoneContacts.Model
         /// </summary>
         /// <param name="name">Имя контакта.</param>
         /// <param name="phone">Номер телефона контакта.</param>
-        /// <param name="email">Почтовый адрес контакта.</param>
+        /// <param name="email">Адрес электронной почты контакта.</param>
         public Contact(string name, string phone, string email)
         {
             Name = name;
             Phone = phone;
             Email = email;
+        }
+
+        /// <summary>
+        /// Создаёт копию контакта.
+        /// </summary>
+        /// <returns>Копия объекта <see cref="Contact"/>.</returns>
+        public object Clone()
+        {
+            return new Contact(string.Copy(Name), string.Copy(Phone), string.Copy(Email));
         }
     }
 }

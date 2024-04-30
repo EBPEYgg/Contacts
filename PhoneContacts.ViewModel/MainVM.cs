@@ -1,16 +1,16 @@
-﻿using PhoneContacts.Model.Services;
-using PhoneContacts.Model;
-using System.ComponentModel;
-using System.Windows.Input;
+﻿using PhoneContacts.Model;
 using System.Collections.ObjectModel;
-using System;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using PhoneContacts.ViewModel.Services;
+using System.ComponentModel;
 
 namespace PhoneContacts.ViewModel
 {
     /// <summary>
     /// Класс, описывающий ViewModel для главного окна.
     /// </summary>
-    public class MainVM : INotifyPropertyChanged, IDataErrorInfo
+    public class MainVM : ObservableObject
     {
         /// <summary>
         /// Коллекция с данными о контактах.
@@ -20,22 +20,12 @@ namespace PhoneContacts.ViewModel
         /// <summary>
         /// Текущий выбранный контакт.
         /// </summary>
-        private Contact _selectedContact;
+        private ContactVM _selectedContact;
 
         /// <summary>
-        /// Имя контакта.
+        /// Контакт, хранящий неизменённые данные. 
         /// </summary>
-        private string _name;
-
-        /// <summary>
-        /// Телефон контакта.
-        /// </summary>
-        private string _phone;
-
-        /// <summary>
-        /// Почтовый адрес контакта.
-        /// </summary>
-        private string _email;
+        private ContactVM _beforeEditingContact;
 
         /// <summary>
         /// Индекс текущего выбранного элемента для удаления 
@@ -74,44 +64,34 @@ namespace PhoneContacts.ViewModel
         private bool _isReadOnly = false;
 
         /// <summary>
-        /// Событие, отслеживающее изменение значения свойства контакта.
+        /// Статус добавления нового контакта.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        private bool _isAdding = false;
 
         /// <summary>
         /// Возвращает и задает команду для сохранения данных.
         /// </summary>
-        public ICommand SaveCommand { get; set; }
-
-        /// <summary>
-        /// Возвращает и задает команду для загрузки данных.
-        /// </summary>
-        public ICommand LoadCommand { get; set; }
-
-        /// <summary>
-        /// Возвращает и задает команду для работы с выбранным в листбоксе контактом.
-        /// </summary>
-        public ICommand SelectedContactCommand { get; set; }
+        public RelayCommand SaveCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для добавления контакта.
         /// </summary>
-        public ICommand AddCommand { get; set; }
+        public RelayCommand AddCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для редактирования контакта.
         /// </summary>
-        public ICommand EditCommand { get; set; }
+        public RelayCommand EditCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для удаления контакта.
         /// </summary>
-        public ICommand RemoveCommand { get; set; }
+        public RelayCommand RemoveCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает команду для сохранения данных о контакте.
         /// </summary>
-        public ICommand ApplyCommand { get; set; }
+        public RelayCommand ApplyCommand { get; set; }
 
         /// <summary>
         /// Возвращает и задает свойство Visibility у кнопки ApplyButton.
@@ -178,45 +158,6 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
-        /// Возвращает и задает имя контакта.
-        /// </summary>
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                OnPropertyChanged(nameof(Name));
-            }
-        }
-
-        /// <summary>
-        /// Возвращает и задает номер телефона контакта.
-        /// </summary>
-        public string Phone
-        {
-            get => _phone;
-            set
-            {
-                _phone = value;
-                OnPropertyChanged(nameof(Phone));
-            }
-        }
-
-        /// <summary>
-        /// Возвращает и задает почтовый адрес контакта.
-        /// </summary>
-        public string Email
-        {
-            get => _email;
-            set
-            {
-                _email = value;
-                OnPropertyChanged(nameof(Email));
-            }
-        }
-        
-        /// <summary>
         /// Возвращает и задает свойство IsReadOnly для NameTextBox, PhoneTextBox, EmailTextBox.
         /// </summary>
         public bool IsReadOnly
@@ -242,62 +183,41 @@ namespace PhoneContacts.ViewModel
             {
                 _isEditing = value;
                 IsReadOnly = !value;
-                OnPropertyChanged(nameof(IsEditing));
-                OnPropertyChanged(nameof(IsEditButtonEnabled));
-                OnPropertyChanged(nameof(IsApplyButtonVisibility));
             }
         }
 
         /// <summary>
-        /// Возвращает сообщение об ошибке.
+        /// Возвращает и задаёт статус добавления контакта <see cref="ContactVM"/>.
         /// </summary>
-        /// <param name="columnName">Название свойства.</param>
-        /// <returns>Текст ошибки.</returns>
-        public string this[string columnName]
+        public bool IsAdding
         {
-            get
+            get => _isAdding;
+            set
             {
-                string error = null;
-                switch (columnName)
+                if (_isAdding != value)
                 {
-                    case "Name":
-                        if (!ValueValidator.ValidateName(Name) && 
-                            Name != null && Name != String.Empty)
-                        {
-                            error = "Name can contains only russian, " +
-                                "english letters and one space. Example: FirstName LastName";
-                        }
-                        break;
-                    case "Phone":
-                        if (!ValueValidator.ValidateNumber(Phone) && 
-                            Phone != null && Phone != String.Empty)
-                        {
-                            error = "Phone Number can contains only digits, " +
-                                "spaces and symbols '+()-'. Example: +7 (999) 111-22-33";
-                        }
-                        break;
-                    case "Email":
-                        if (!ValueValidator.ValidateEmail(Email) && 
-                            Email != null && Email != String.Empty)
-                        {
-                            error = "Email can contains only digits, " +
-                                "english letters and symbol '@'. Example: test@gmail.com";
-                        }
-                        break;
+                    _isAdding = value;
+                    OnPropertyChanged(nameof(IsAdding));
                 }
-                return error;
             }
         }
 
         /// <summary>
-        /// Возвращает текст ошибки.
+        /// Возвращает и задаёт неизмененные данные.
         /// </summary>
-        public string Error => null;
+        public ContactVM BeforeEditingContact
+        {
+            get => _beforeEditingContact;
+            set
+            {
+                _beforeEditingContact = value;
+            }
+        }
 
         /// <summary>
         /// Возвращает и задает выбранный контакт.
         /// </summary>
-        public Contact SelectedContact
+        public ContactVM SelectedContact
         {
             get => _selectedContact;
             set
@@ -306,26 +226,15 @@ namespace PhoneContacts.ViewModel
                 {
                     _selectedContact = value;
                     OnPropertyChanged(nameof(SelectedContact));
-                    SelectionChanged();
+                    SelectionChange();
                 }
             }
         }
 
         /// <summary>
-        /// Возвращает и задает список товаров.
+        /// Возвращает и задает список контактов.
         /// </summary>
-        public ObservableCollection<Contact> Contacts
-        {
-            get => _contacts;
-            set
-            {
-                if (_contacts != value)
-                {
-                    _contacts = value;
-                    OnPropertyChanged(nameof(Contacts));
-                }
-            }
-        }
+        public ObservableCollection<ContactVM> Contacts { get; set; }
 
         /// <summary>
         /// Конструктор класса <see cref="MainVM"/>.
@@ -333,70 +242,32 @@ namespace PhoneContacts.ViewModel
         public MainVM()
         {
             Contacts = ContactSerializer.LoadContact();
-            SaveCommand = new MyCommand((param) => ContactSerializer.SaveContact(_contacts));
-            AddCommand = new MyCommand((param) => Add());
-            ApplyCommand = new MyCommand((param) => Apply());
-            EditCommand = new MyCommand((param) => Edit());
-            RemoveCommand = new MyCommand((param) => Remove());
-            SelectedContactCommand = new MyCommand((param) => SelectionChanged());
+            SaveCommand = new RelayCommand(SaveContacts);
+            AddCommand = new RelayCommand(Add);
+            ApplyCommand = new RelayCommand(Apply);
+            EditCommand = new RelayCommand(Edit);
+            RemoveCommand = new RelayCommand(Remove);
 
             IsEditButtonEnabled = false;
             IsRemoveButtonEnabled = false;
             IsReadOnly = true;
 
-            // Кнопка Apply видна, только если
-            // данные из текстовых полей прошли валидацию.
-            PropertyChanged += (sender, e) =>
+            if (Contacts.Count > 0)
             {
-                if (e.PropertyName == nameof(Name) || 
-                e.PropertyName == nameof(Phone) || 
-                e.PropertyName == nameof(Email))
-                {
-                    IsApplyButtonVisibility = IsValidateDataInTextBoxes();
-                }
-            };
-        }
-
-        /// <summary>
-        /// Метод, который проверяет, правильно ли введены данные в текстовых полях.
-        /// </summary>
-        /// <returns>True, если данные в текстовых полях 
-        /// прошли валидацию, иначе false.</returns>
-        private bool IsValidateDataInTextBoxes()
-        {
-            if (Name != String.Empty && 
-                Phone != String.Empty && 
-                Email != String.Empty)
-            {
-                return string.IsNullOrEmpty(this["Name"]) &&
-                       string.IsNullOrEmpty(this["Phone"]) &&
-                       string.IsNullOrEmpty(this["Email"]);
+                SelectedContact = Contacts[0];
             }
-            return false;
         }
 
         /// <summary>
-        /// Метод, который вызывает событие <see cref="PropertyChanged"/>.
+        /// Метод, который обрабатывает смену выбранного контакта.
         /// </summary>
-        /// <param name="propertyName">Название измененного свойства.</param>
-        private void OnPropertyChanged(string propertyName)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        /// <summary>
-        /// Метод для обработки выбранного контакта в ContactsListBox.
-        /// </summary>
-        private void SelectionChanged()
+        private void SelectionChange()
         {
             if (SelectedContact != null)
             {
-                Name = SelectedContact.Name;
-                Phone = SelectedContact.Phone;
-                Email = SelectedContact.Email;
                 ToggleEnableButtons(true);
-                _selectedIndex = Contacts.IndexOf(SelectedContact);
                 IsEditing = false;
-                IsAddButtonEnabled = true;
-                IsApplyButtonVisibility = false;
+                SelectedContact.PropertyChanged += OnContactPropertyChanged;
             }
         }
 
@@ -405,10 +276,15 @@ namespace PhoneContacts.ViewModel
         /// </summary>
         private void Add()
         {
-            IsReadOnly = false;
-            ClearContactInfo();
-            ToggleEnableButtons(false);
+            if (Contacts.Count > 0)
+            {
+                SelectedContact.PropertyChanged -= OnContactPropertyChanged;
+            }
+            IsAdding = true;
             SelectedContact = null;
+            SelectedContact = new ContactVM();
+            ToggleEnableButtons(false);
+            IsReadOnly = false;
         }
 
         /// <summary>
@@ -417,27 +293,24 @@ namespace PhoneContacts.ViewModel
         /// </summary>
         private void Apply()
         {
-            if (!IsEditing)
+            if (IsAdding)
             {
-                Contact newContact = new Contact(Name, Phone, Email);
-                _contacts.Add(newContact);
-                SelectedContact = newContact;
+                Contacts.Add(SelectedContact);
+                IsAdding = false;
             }
 
             else
             {
-                SelectedContact.Name = Name;
-                SelectedContact.Phone = Phone;
-                SelectedContact.Email = Email;
+                _selectedIndex = Contacts.IndexOf(BeforeEditingContact);
+                Contacts[_selectedIndex] = SelectedContact;
+                SelectedContact = Contacts[_selectedIndex];
             }
 
             SaveCommand.Execute(_contacts);
-            ToggleEnableButtons(false);
-            IsAddButtonEnabled = true;
             IsApplyButtonVisibility = false;
             IsEditing = false;
+            ToggleEnableButtons(true);
             OnPropertyChanged(nameof(SelectedContact));
-            SelectionChanged();
         }
 
         /// <summary>
@@ -445,8 +318,10 @@ namespace PhoneContacts.ViewModel
         /// </summary>
         private void Edit()
         {
+            BeforeEditingContact = SelectedContact;
+            SelectedContact = (ContactVM)SelectedContact.Clone();
             IsEditing = true;
-            IsApplyButtonVisibility = true;
+            UpdateApplyButtonVisibility();
             ToggleEnableButtons(false);
         }
 
@@ -476,7 +351,6 @@ namespace PhoneContacts.ViewModel
                 else
                 {
                     SelectedContact = null;
-                    ClearContactInfo();
                     IsEditButtonEnabled = false;
                     IsRemoveButtonEnabled = false;
                 }
@@ -495,13 +369,34 @@ namespace PhoneContacts.ViewModel
         }
 
         /// <summary>
-        /// Метод, который очищает текстовые поля на форме.
+        /// <inheritdoc cref="ContactSerializer.SaveContact(ObservableCollection{ContactVM})"/>
         /// </summary>
-        private void ClearContactInfo()
+        private void SaveContacts()
         {
-            Name = string.Empty;
-            Phone = string.Empty;
-            Email = string.Empty;
+            ContactSerializer.SaveContact(Contacts);
+        }
+
+        /// <summary>
+        /// Метод, который отслеживает изменения свойства 
+        /// <see cref="ContactVM.HasValidationErrors"/> в <see cref="ContactVM"/>.
+        /// </summary>
+        /// <param name="sender">Ссылка на объект, который инициировал событие.</param>
+        /// <param name="e">Объект с информацией о событии измененнного свойства.</param>
+        private void OnContactPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ContactVM.HasValidationErrors))
+            {
+                UpdateApplyButtonVisibility();
+            }
+        }
+
+        /// <summary>
+        /// Метод, который меняет видимость кнопки Apply 
+        /// в зависимости от результата валидации данных.
+        /// </summary>
+        private void UpdateApplyButtonVisibility()
+        {
+            IsApplyButtonVisibility = !SelectedContact.HasValidationErrors;
         }
     }
 }

@@ -1,0 +1,67 @@
+﻿<Window x:Class="PhoneContacts.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:PhoneContacts.View"
+        xmlns:converters="clr-namespace:PhoneContacts.View.Services"
+        xmlns:vm="clr-namespace:PhoneContacts.ViewModel;assembly=PhoneContacts.ViewModel"
+        xmlns:userControls="clr-namespace:PhoneContacts.View.Controls" 
+        mc:Ignorable="d"
+        Title="Contacts" Height="450" Width="600" MinWidth="600" MinHeight="450" 
+        AllowDrop="True" WindowStartupLocation="CenterScreen" Icon="/Resources/ContactsApp_96x96.ico">
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:PhoneFormatConverter x:Key="PhoneFormatConverter"/>
+        <DataTemplate x:Key="contactTemplate">
+            <StackPanel Margin="3" Orientation="Horizontal">
+                <Image Source="/Resources/photo_placeholder_listbox_100x100.png" MaxWidth="35" MaxHeight="35" Margin="0,0,5,0"/>
+                <StackPanel>
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Phone}"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:MainVM/>
+    </Window.DataContext>
+    <Grid x:Name="MainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="ContactsColumn" Width="3*" MinWidth="180"/>
+            <ColumnDefinition x:Name="GridSplitterColumn" Width="Auto"/>
+            <ColumnDefinition x:Name="ReadContactColumn" Width="5*" MinWidth="250"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="LeftColumnGrid" Background="#f0f0f0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="46*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="55*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="95*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="104*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="395*"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="34*"/>
+            </Grid.RowDefinitions>
+
+            <ListBox x:Name="ContactsListBox" Grid.ColumnSpan="7" ItemsSource="{Binding Contacts}" SelectedItem="{Binding SelectedContact}" Margin="8,10,8,4" ItemTemplate="{StaticResource contactTemplate}"/>
+
+            <Button x:Name="AddButton" Content="Add" Grid.Row="2" Grid.ColumnSpan="3" Command="{Binding AddCommand}" IsEnabled="{Binding IsAddButtonEnabled}" Height="25" Margin="8,0,0,8" VerticalAlignment="Bottom"/>
+            <Button x:Name="RemoveButton" Content="Remove" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Command="{Binding RemoveCommand}" IsEnabled="{Binding IsRemoveButtonEnabled}" Margin="3,0,8,8" Height="25" VerticalAlignment="Bottom"/>
+            <Button x:Name="EditButton" Content="Edit" Grid.Row="2" Grid.Column="4" Command="{Binding EditCommand}" IsEnabled="{Binding IsEditButtonEnabled}" Margin="1,0,0,8" Height="25" VerticalAlignment="Bottom"/>
+        </Grid>
+
+        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch"/>
+
+        <Grid x:Name="InfoGrid" Grid.Column="2" Margin="0,10,9,10">
+            <userControls:ContactUserControl DataContext="{Binding SelectedContact, ValidatesOnDataErrors=True}" IsReadOnly="{Binding DataContext.IsReadOnly, RelativeSource={RelativeSource AncestorType=local:MainWindow}}" VerticalAlignment="Top"/>
+            <Button x:Name="ApplyButton" Content="Apply" HorizontalAlignment="Right" Margin="0,131,65,0" VerticalAlignment="Top" Width="84" Height="20" Command="{Binding ApplyCommand}" Visibility="{Binding IsApplyButtonVisibility, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        </Grid>
+    </Grid>
+</Window>

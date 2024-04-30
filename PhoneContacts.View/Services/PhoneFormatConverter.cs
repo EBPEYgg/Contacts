@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace PhoneContacts.Model.Services
+namespace PhoneContacts.View.Services
 {
     /// <summary>
     /// Класс, описывающий конвертер форматирования номера телефона.

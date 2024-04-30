@@ -3,7 +3,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 
-namespace PhoneContacts.Model.Services
+namespace PhoneContacts.ViewModel.Services
 {
     /// <summary>
     /// Класс, описывающий сериализацию и десериализацию данных.
@@ -19,8 +19,8 @@ namespace PhoneContacts.Model.Services
         /// <summary>
         /// Метод для сохранения объекта контакта в файл.
         /// </summary>
-        /// <param name="contact">Экземпляр класса <see cref="Contact"/>.</param>
-        public static void SaveContact(ObservableCollection<Contact> contact)
+        /// <param name="contact">Экземпляр класса <see cref="ContactVM"/>.</param>
+        public static void SaveContact(ObservableCollection<ContactVM> contact)
         {
             if (!Directory.Exists(_filePath))
             {
@@ -34,16 +34,16 @@ namespace PhoneContacts.Model.Services
         /// <summary>
         /// Метод для загрузки объекта контакта из файла.
         /// </summary>
-        /// <returns>Экземпляр класса <see cref="Contact"/>.</returns>
-        public static ObservableCollection<Contact> LoadContact()
+        /// <returns>Экземпляр класса <see cref="ContactVM"/>.</returns>
+        public static ObservableCollection<ContactVM> LoadContact()
         {
             if (!File.Exists(_filePath))
             {
-                return new ObservableCollection<Contact>();
+                return new ObservableCollection<ContactVM>();
             }
 
             var json = File.ReadAllText(_filePath);
-            return JsonConvert.DeserializeObject<ObservableCollection<Contact>>(json);
+            return JsonConvert.DeserializeObject<ObservableCollection<ContactVM>>(json);
         }
     }
 }
